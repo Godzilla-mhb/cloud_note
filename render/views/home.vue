@@ -6,10 +6,10 @@
                 <span class="title">云笔记</span>
             </div>
             <div class="operate">
-                <div class="operate-btn">我的笔记</div>
-                <div class="operate-btn">新建笔记</div>
-                <div class="operate-btn">保存本地</div>
-                <div class="operate-btn">同步到云</div>
+                <div class="operate-btn" @click="getMyNotes">我的笔记</div>
+                <div class="operate-btn" @click="buildNewNote">新建笔记</div>
+                <div class="operate-btn" @click="saveLocal">保存本地</div>
+                <div class="operate-btn" @click="syncToCloud">同步到云</div>
             </div>
             <div class="bottom">
                 <span class="cur-date">{{currentDate}}</span>
@@ -17,14 +17,23 @@
             </div>
         </div>
         <div class="main-win">
-            <div class="article-list" v-if="list.length">
+            <div class="article-list" v-if="list.length" v-show="showMyNotesList">
                 <li v-for="(item, index) in list" :key="item.id" @click="selectNote(item)">{{item.title}}</li>
             </div>
             <div class="article-content">
                 <div class="article-name">
                     <li @click="selectNote(item)" v-for="(item,index) in openNoteList" :class="currentNoteId == item.id ? 'cur-menu' : '' ">{{item.title}}<span class="close" @click="closeNote($event,index,item)">-</span></li>
                 </div>
-                <textarea class="editor" v-model="noteTxt"></textarea>
+                <textarea class="editor" v-model="noteTxt" @contextmenu="getContextmenu($event)"></textarea>
+                <contextMenu v-model="openContextMenu" :clientX="clientX" :clientY="clientY"></contextMenu>
+                <Confirm v-model="openNewNoteConfirm" @on-confirm="createNote">
+                    <div slot="title">输出新文件名</div>
+                    <div slot="content"> 文件名：<input type="text" v-model="titleInput" ></div>
+                    <!-- <div slot="bottom">
+                        <span class="add">新增</span>
+                        <span class="cancel">取消</span>
+                    </div> -->
+                </Confirm>
             </div>
 
         </div>
@@ -32,17 +41,96 @@
 </template>
 
 <script>
+import Confirm from '../components/confirm.vue'
+import contextMenu from '../components/context-menu.vue'
 export default {
   data () {
     return {
-      list: [{id: 1, title: '新建文本1.txt', content: '123456'}, {id: 2, title: '新建文本2.txt', content: '654321'}], // 笔记全部记录
+      openContextMenu: false, // 打开右键列表
+      showMyNotesList: false, // 是否展示我的笔记列表
+      list: [], // 笔记全部记录
       openNoteList: [], // 记录打开的文档列表
       currentNoteId: '', // 当前打开的文档id
-      noteTxt: '' // 文档内容
+      noteTxt: '', // 文档内容
+      clientX: '',
+      clientY: '',
+      openNewNoteConfirm: false, // 新建笔记弹窗控制开关
+      titleInput: '' // 标题输入
     }
   },
+  components: {
+    Confirm,
+    contextMenu
+  },
   methods: {
-    // 选中文本
+    // 右键调起
+    getContextmenu (e) {
+      console.log('右键', e)
+      this.openContextMenu = true
+      this.clientX = e.clientX
+      this.clientY = e.clientY
+    },
+    // 获取我的笔记
+    getMyNotes () {
+      this.showMyNotesList = !this.showMyNotesList
+      var myNotes = localStorage.getItem('myNotes')
+      if (myNotes) {
+        this.list = JSON.parse(myNotes) || []
+      } else {
+        this.$toast.error('暂无笔记')
+      }
+    },
+    // 点击`新建笔记`
+    buildNewNote () {
+      this.openNewNoteConfirm = true
+    },
+    // 新建笔记确定
+    createNote () {
+      if (!this.titleInput) {
+        this.$toast.error('文件名不能为空')
+        return
+      }
+      console.log(this.titleInput)
+      var id = +new Date()
+      var myNotes = localStorage.getItem('myNotes')
+      if (myNotes) {
+        myNotes = JSON.parse(myNotes)
+      } else {
+        myNotes = []
+      }
+      myNotes.push({id: id, title: this.titleInput, content: '', time: new Date()})
+      // 打开文档加入
+      this.openNoteList.push({id: id, title: this.titleInput, content: '', time: new Date()})
+      // 我的文档加入
+      this.list.push({id: id, title: this.titleInput, content: '', time: new Date()})
+      // 将当前文档的id设为新增的这块
+      this.currentNoteId = id
+      localStorage.setItem('myNotes', JSON.stringify(myNotes)) // 存储
+      this.openNewNoteConfirm = false
+    },
+    // 保存本地
+    saveLocal () {
+      // 当前文档保存
+      if (!this.currentNoteId) {
+        this.$toast.error('请选择你要保存的文档')
+        return
+      }
+      var notesList = JSON.parse(localStorage.getItem('myNotes'))
+      for (var i = 0; i < notesList.length; i++) {
+        if (this.currentNoteId === notesList[i].id) {
+          notesList[i].content = this.noteTxt
+          notesList[i].updateTime = new Date()
+        }
+      }
+      localStorage.setItem('myNotes', JSON.stringify(notesList))
+      this.$toast.success('本地保存成功')
+      this.list = notesList // 刷新本地
+    },
+    // 同步到云
+    syncToCloud () {
+      this.$toast.success('你有点骚气')
+    },
+    // 切换选中
     selectNote (data) {
       // 若无则插入,重复不做处理
       var match = this.openNoteList.filter(it => {
@@ -58,10 +146,22 @@ export default {
     closeNote (e, index, data) {
       e.stopPropagation() // 阻止冒泡
       this.openNoteList.splice(index, 1)
-      if (data.id == this.currentNoteId) { // 关闭的是选中的文档
+      if (data.id === this.currentNoteId) { // 关闭的是选中的文档
         this.noteTxt = ''
+        this.currentNoteId = ''
+      }
+    },
+    // 监听ctrl + s 保存事件
+    keyBoardSave (e) {
+      var keyCode = e.keyCode || e.which || e.charCode
+      var ctrlKey = e.ctrlKey || e.metaKey
+      if (ctrlKey && keyCode == 83) {
+        this.saveLocal()
       }
     }
+  },
+  mounted () {
+    document.querySelector('.editor').addEventListener('keydown', this.keyBoardSave, false)
   },
   computed: {
     currentDate: function () {
