@@ -41,6 +41,12 @@ export default {
   watch: {
     value: function (newval, oldval) {
       this.isOpen = newval
+    },
+    clientX (newval, oldval) {
+
+    },
+    clientY (newval, oldval) {
+
     }
   },
   props: {
@@ -49,11 +55,11 @@ export default {
       default: false
     },
     clientX: {
-      type: Number,
+      type: [Number, String],
       required: true
     },
     clientY: {
-      type: Number,
+      type: [Number, String],
       required: true
     }
   }
