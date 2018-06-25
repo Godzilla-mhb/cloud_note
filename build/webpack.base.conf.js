@@ -62,6 +62,10 @@ var webpackConfig = {
         }
       }
     ]
+  },
+  node: {
+    __dirname: false,
+    fs: true,
   }
 }
 
