@@ -5,7 +5,9 @@
   "main": "main/main.js",
   "scripts": {
     "start": "electron . ",
-    "dev": "node build/dev-server.js"
+    "dev:app": "node build/dev-server.js",
+    "dev:server": "node server/index.js",
+    "dev": "concurrently --kill-others \"yarn dev:server\" \"yarn start\""
   },
   "keywords": [
     "Electron",
@@ -27,6 +29,7 @@
     "babel-helper-vue-jsx-merge-props": "^2.0.3",
     "babel-jest": "^21.0.2",
     "babel-loader": "^7.1.1",
+    "concurrently": "^3.5.0",
     "babel-plugin-dynamic-import-node": "^1.2.0",
     "babel-plugin-syntax-jsx": "^6.18.0",
     "babel-plugin-transform-es2015-modules-commonjs": "^6.26.0",

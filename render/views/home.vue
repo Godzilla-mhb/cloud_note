@@ -73,12 +73,13 @@ export default {
     // 获取我的笔记
     getMyNotes () {
       this.showMyNotesList = !this.showMyNotesList
-      var myNotes = localStorage.getItem('myNotes')
-      if (myNotes) {
-        this.list = JSON.parse(myNotes) || []
-      } else {
-        this.$toast.error('暂无笔记')
-      }
+      this.$store.dispatch('getItem', {key: 'myNotes'}).then(myNotes => {
+        if (myNotes) {
+          this.list = JSON.parse(myNotes) || []
+        } else {
+          this.$toast.error('暂无笔记')
+        }
+      })
     },
     // 点击`新建笔记`
     buildNewNote () {
@@ -92,7 +93,7 @@ export default {
       }
       console.log(this.titleInput)
       var id = +new Date()
-      var myNotes = localStorage.getItem('myNotes')
+      var myNotes = this.$store.dispatch('getItem', {key: 'myNotes'})
       if (myNotes) {
         myNotes = JSON.parse(myNotes)
       } else {
@@ -105,7 +106,7 @@ export default {
       this.list.push({id: id, title: this.titleInput, content: '', time: new Date()})
       // 将当前文档的id设为新增的这块
       this.currentNoteId = id
-      localStorage.setItem('myNotes', JSON.stringify(myNotes)) // 存储
+      this.$store.dispatch('setItem', {key: 'myNotes', value: JSON.stringify(myNotes)}) // 存储
       this.openNewNoteConfirm = false
     },
     // 保存本地
@@ -115,14 +116,14 @@ export default {
         this.$toast.error('请选择你要保存的文档')
         return
       }
-      var notesList = JSON.parse(localStorage.getItem('myNotes'))
+      var notesList = JSON.parse(this.$store.dispatch('getItem', {key: 'myNotes'}))
       for (var i = 0; i < notesList.length; i++) {
         if (this.currentNoteId === notesList[i].id) {
           notesList[i].content = this.noteTxt
           notesList[i].updateTime = new Date()
         }
       }
-      localStorage.setItem('myNotes', JSON.stringify(notesList))
+      this.$store.dispatch('setItem', {key: 'myNotes', value: JSON.stringify(notesList)})
       this.$toast.success('本地保存成功')
       this.list = notesList // 刷新本地
     },
@@ -155,7 +156,7 @@ export default {
     keyBoardSave (e) {
       var keyCode = e.keyCode || e.which || e.charCode
       var ctrlKey = e.ctrlKey || e.metaKey
-      if (ctrlKey && keyCode == 83) {
+      if (ctrlKey && keyCode === 83) {
         this.saveLocal()
       }
     }

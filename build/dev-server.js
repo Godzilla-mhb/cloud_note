@@ -70,7 +70,7 @@ var readyPromise = new Promise(resolve => {
 
 console.log('> Starting dev server...')
 devMiddleware.waitUntilValid(() => {
-  console.log('> Listening at ' + uri + '\n')
+  console.log('> App is Listening at ' + uri + '\n')
   _resolve()
 })
 

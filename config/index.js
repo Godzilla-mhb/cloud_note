@@ -1,7 +1,5 @@
 // see http://vuejs-templates.github.io/webpack for documentation.
 var path = require('path')
-var fs = require('fs')
-var filePath = path.resolve('./')
 var config = {
   build: {
     env: require('./prod.env'),

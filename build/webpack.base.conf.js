@@ -1,4 +1,4 @@
-var path = require('path')
+
 var utils = require('./utils')
 var config = require('../config')
 var vueLoaderConfig = require('./vue-loader.conf')
@@ -64,8 +64,7 @@ var webpackConfig = {
     ]
   },
   node: {
-    __dirname: false,
-    fs: true,
+    __dirname: false
   }
 }
 
