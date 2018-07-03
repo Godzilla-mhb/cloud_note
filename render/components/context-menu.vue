@@ -1,7 +1,7 @@
 <template>
-    <div class="context-menu" v-if="isOpen">
-        <div v-for="item in list" @click="itemClick(item.type)">{{item.name}}</div>
-    </div>
+  <div class="context-menu" v-if="isOpen" :style="style">
+    <div class="menu-item" v-for="item in list" @click="itemClick(item.type)">{{item.name}}</div>
+  </div>
 </template>
 
 <script>
@@ -35,7 +35,54 @@ export default {
   },
   methods: {
     itemClick (type) {
+      console.log(type === 'photo')
+      if (type === 'photo') {
+        console.log('*********')
+        this.lauchCatPhoto()
+      }
+    },
+    lauchCatPhoto () {
+      console.log('fuck************')
+      var desktopCapturer = require('electron').desktopCapturer
+      console.log('desktopCapturer', desktopCapturer)
+      desktopCapturer.getSources({ types: ['window', 'screen'] }, function (error, sources) {
+        if (error) throw error
+        for (var i = 0; i < sources.length; ++i) {
+          if (sources[i].name == 'Electron') {
+            navigator.webkitGetUserMedia({
+              audio: false,
+              video: {
+                mandatory: {
+                  chromeMediaSource: 'desktop',
+                  chromeMediaSourceId: sources[i].id,
+                  minWidth: 1280,
+                  maxWidth: 1280,
+                  minHeight: 720,
+                  maxHeight: 720
+                }
+              }
+            }, gotStream, getUserMediaError)
+            return
+          }
+        }
+      })
 
+      function gotStream (stream) {
+        document.querySelector('video').src = URL.createObjectURL(stream)
+      }
+
+      function getUserMediaError (e) {
+        console.log('getUserMediaError')
+      }
+    }
+  },
+  computed: {
+    style () {
+      return {
+        left: this.clientX + 'px',
+        top: this.clientY + 'px',
+        position: 'absolute'
+      }
     }
   },
   watch: {
@@ -43,10 +90,10 @@ export default {
       this.isOpen = newval
     },
     clientX (newval, oldval) {
-
+      console.log('clientX', newval)
     },
     clientY (newval, oldval) {
-
+      console.log('clientY', newval)
     }
   },
   props: {
@@ -67,9 +114,19 @@ export default {
 </script>
 
 <style lang="less" scoped>
-.context-menu{
-    width: 300px;
+  .context-menu {
+    padding: 5px;
+    width: 100px;
     background: #fff;
-    color:#000;
-}
+    color: #000;
+    border-radius: 4px;
+    font-size: 16px;
+    .menu-item {
+      line-height: 20px;
+      &:hover {
+        background-color: pink;
+        cursor: pointer;
+      }
+    }
+  }
 </style>

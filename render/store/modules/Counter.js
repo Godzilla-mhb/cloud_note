@@ -27,7 +27,7 @@ const actions = {
     })
   },
   getItem ({ commit }, data) {
-    console.log('data',data)
+    console.log('data', data)
     return new Promise((resolve, reject) => {
       axios.post('http://localhost:9999/file/get', data).then(res => {
         console.log(res)
