@@ -64,7 +64,8 @@ var webpackConfig = {
     ]
   },
   node: {
-    __dirname: false
+    __dirname: false,
+    fs: 'empty'
   }
 }
 
