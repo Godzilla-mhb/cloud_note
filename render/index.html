@@ -8,5 +8,31 @@
 </head>
 <body>
     <div id="app"></div>
+    <script>
+          global.elRequire = require;
+
+          const electron = require('electron');
+          const ipcRenderer = electron.ipcRenderer;
+          const remote = electron.remote;
+          const shell = electron.shell;
+
+          const path = require('path');
+          const os = require('os');
+          const childProcess = require('child_process');
+          const fs = require('fs');
+          const rc = require('rc');
+
+          global.electron = electron;
+          global.remote = remote;
+          global.ipcRenderer = ipcRenderer;
+          global.shell = shell;
+          global.path = path;
+          global.os = os;
+          global.childProcess = childProcess;
+          global.fs = fs;
+          global.rc = rc;
+          
+          global.rootName = process.cwd();
+    </script>
 </body>
 </html>

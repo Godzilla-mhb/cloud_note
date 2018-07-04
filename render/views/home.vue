@@ -36,7 +36,6 @@
                     </div>
                 </Confirm>
             </div>
-
         </div>
     </div>
 </template>

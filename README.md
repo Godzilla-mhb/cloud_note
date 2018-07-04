@@ -12,6 +12,8 @@
     7、拉伸功能 ***
     [T1]8、本地文件上传功能 ***
     [T1]9、简易富文本
-
+    10、主进程、渲染进程之间的通讯https://cnodejs.org/topic/5a72e5529288dc8153288442，
+    11、为了区分webpack的require和node的require https://www.jianshu.com/p/d4d1de286952
+    12、解决截图黑屏问题 https://github.com/chong0808/shotScreen
 
 ## npm start 默认起 8889 客户端 9999 本地服务端

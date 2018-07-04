@@ -1,8 +1,9 @@
 // 主进程文件
 // Modules to control application life and create native browser window
-const {app, BrowserWindow} = require('electron')
+const {app, BrowserWindow, ipcMain} = require('electron')
 var devServer  = require('../build/dev-server.js')
 var config = require('../config')
+var utils = require('./utils.js')
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
 let mainWindow
@@ -19,7 +20,11 @@ function createWindow () {
     // 打开开发工具
     mainWindow.webContents.openDevTools()
   })
-
+  ipcMain.on('open_screenshot', (event, arg) => {
+    if (arg) {
+      utils.screenShot()
+    }
+  })
   // Open the DevTools.
   // mainWindow.webContents.openDevTools()
 

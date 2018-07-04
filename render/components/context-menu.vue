@@ -35,45 +35,13 @@ export default {
   },
   methods: {
     itemClick (type) {
-      console.log(type === 'photo')
       if (type === 'photo') {
-        console.log('*********')
         this.lauchCatPhoto()
       }
     },
     lauchCatPhoto () {
-      console.log('fuck************')
-      var desktopCapturer = require('electron').desktopCapturer
-      console.log('desktopCapturer', desktopCapturer)
-      desktopCapturer.getSources({ types: ['window', 'screen'] }, function (error, sources) {
-        if (error) throw error
-        for (var i = 0; i < sources.length; ++i) {
-          if (sources[i].name == 'Electron') {
-            navigator.webkitGetUserMedia({
-              audio: false,
-              video: {
-                mandatory: {
-                  chromeMediaSource: 'desktop',
-                  chromeMediaSourceId: sources[i].id,
-                  minWidth: 1280,
-                  maxWidth: 1280,
-                  minHeight: 720,
-                  maxHeight: 720
-                }
-              }
-            }, gotStream, getUserMediaError)
-            return
-          }
-        }
-      })
-
-      function gotStream (stream) {
-        document.querySelector('video').src = URL.createObjectURL(stream)
-      }
-
-      function getUserMediaError (e) {
-        console.log('getUserMediaError')
-      }
+      this.$ipc.send('open_screenshot', true)
+      console.log('*********************')
     }
   },
   computed: {
