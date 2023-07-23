@@ -44,7 +44,7 @@ export default {
     height: 30px;
     line-height: 30px;
     color:#fff;
-    background-color: #1e1e1e;
+    background-color: white;
     color:#909399;
     padding: 0 5px;
     display: flex;

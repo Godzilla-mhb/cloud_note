@@ -26,7 +26,7 @@
                         <span class="close" @click="closeNote($event,index,item)">-</span>
                     </li>
                 </div>
-                <textarea class="editor" v-model="noteTxt" @click="bodyClick($event)" @contextmenu="getContextmenu($event)"></textarea>
+                <textarea class="editor" v-model="noteTxt" @click="bodyClick($event)" @contextmenu="getContextmenu($event)" style="height:932px"></textarea>
                 <contextMenu v-model="openContextMenu" :clientX="clientX" :clientY="clientY"></contextMenu>
                 <!-- 新增文件 -->
                 <Confirm v-model="openNewNoteConfirm" @on-confirm="createNote">
@@ -234,7 +234,7 @@ export default {
             height: 100%;
             .sidebar {
                 width: 400px;
-                height: 100%;
+                height: 98%;
                 float: left;
                 background: #fff;
                 .top {
@@ -283,7 +283,7 @@ export default {
             }
             .main-win {
                 margin-left: 400px;
-                height: 100%;
+                height: 98%;
                 background: #000;
                 display: flex;
                 .editor {
@@ -307,7 +307,7 @@ export default {
                 .article-content {
                     flex: 1;
                     .article-name {
-                        background: #252526;
+                        background: white;
                         height: 40px;
                         color: #fff;
                         li {
@@ -331,7 +331,7 @@ export default {
                         }
                     }
                     .editor {
-                        background: #1e1e1e;
+                        background: white;
                     }
                 }
                 .editor {
@@ -350,7 +350,7 @@ export default {
             height: 100%;
             .sidebar {
                 width: 200px;
-                height: 100%;
+                height: 98%;
                 float: left;
                 background: #fff;
                 .top {
@@ -399,7 +399,7 @@ export default {
             }
             .main-win {
                 margin-left: 200px;
-                height: 100%;
+                height: 98%;
                 background: #000;
                 display: flex;
                 .article-list {
@@ -420,7 +420,7 @@ export default {
                 .article-content {
                     flex: 1;
                     .article-name {
-                        background: #252526;
+                        background: white;
                         height: 30px;
                         color: #fff;
                         li {
@@ -448,7 +448,7 @@ export default {
                         overflow-y: scroll;
                         resize: none;
                         width: calc(100% - 2px);
-                        background: #1e1e1e;
+                        background: white;
                         padding: 0;
                         border: none;
                         margin: 0;
