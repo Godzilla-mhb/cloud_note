@@ -292,7 +292,7 @@ export default {
                 }
                 .article-list {
                     flex-basis: 200px;
-                    background: pink;
+                    background: #f5e5e8;;
                     li {
                         list-style: none;
                         font-size: 14px;
@@ -307,7 +307,7 @@ export default {
                 .article-content {
                     flex: 1;
                     .article-name {
-                        background: white;
+                        background: #d4bbbb;
                         height: 40px;
                         color: #fff;
                         li {
@@ -404,7 +404,7 @@ export default {
                 display: flex;
                 .article-list {
                     flex-basis: 100px;
-                    background: pink;
+                    background: #f5e5e8;;
                     li {
                         list-style: none;
                         font-size: 14px;
@@ -420,7 +420,7 @@ export default {
                 .article-content {
                     flex: 1;
                     .article-name {
-                        background: white;
+                        background: #d4bbbb;
                         height: 30px;
                         color: #fff;
                         li {
