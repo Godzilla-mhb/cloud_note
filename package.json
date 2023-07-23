@@ -7,7 +7,7 @@
     "start": "electron . ",
     "dev:app": "node build/dev-server.js",
     "dev:server": "node server/index.js",
-    "dev": "concurrently --kill-others \"yarn start\" \"yarn dev:server\""
+    "dev": "concurrently --kill-others  \"yarn start\" \"yarn dev:server\""
   },
   "keywords": [
     "Electron",

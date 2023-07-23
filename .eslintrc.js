@@ -5,7 +5,8 @@ module.exports = {
         sourceType: 'module'
     },
     env: {
-        browser: true,
+        // browser: true,
+        browser: false,
     },
     // https://standardjs.com/readme-zhcn.html
     extends: 'standard',
