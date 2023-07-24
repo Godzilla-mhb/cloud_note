@@ -7,7 +7,8 @@
     "start": "electron . ",
     "dev:app": "node build/dev-server.js",
     "dev:server": "node server/index.js",
-    "dev": "concurrently --kill-others  \"yarn start\" \"yarn dev:server\""
+    "dev": "concurrently --kill-others  \"yarn start\" \"yarn dev:server\"",
+    "build": "vue-cli-service electron:build"
   },
   "keywords": [
     "Electron",
@@ -44,6 +45,7 @@
     "cross-spawn": "^5.0.1",
     "css-loader": "^0.28.0",
     "electron": "^2.0.0",
+    "electron-builder": "^24.4.0",
     "eslint": "^4.15.0",
     "eslint-config-standard": "^10.2.1",
     "eslint-friendly-formatter": "^3.0.0",
