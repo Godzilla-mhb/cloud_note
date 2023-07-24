@@ -3,7 +3,7 @@
         <div class="sidebar">
             <div class="top">
                 <img src="../assets/page.jpg" alt="云笔记" class="logo">
-                <span class="title">云笔记</span>
+                <span class="title">笔记系统</span>
             </div>
             <div class="operate">
                 <div class="operate-btn" @click="getMyNotes">我的笔记</div>
@@ -300,7 +300,8 @@ export default {
                         cursor: pointer;
                         padding: 4px;
                         &:hover {
-                            background: blue;
+                            background: slateblue;
+                            color: white;
                         }
                     }
                 }
@@ -397,7 +398,7 @@ export default {
                     }
                 }
             }
-            .main-win {
+            .main-win { 
                 margin-left: 200px;
                 height: 98%;
                 background: #000;
@@ -412,7 +413,7 @@ export default {
                         cursor: pointer;
                         padding: 4px;
                         &:hover {
-                            background: blue;
+                            background: slateblue;
                             color: #fff;
                         }
                     }
