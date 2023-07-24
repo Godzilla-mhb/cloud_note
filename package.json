@@ -8,7 +8,8 @@
     "dev:app": "node build/dev-server.js",
     "dev:server": "node server/index.js",
     "dev": "concurrently --kill-others  \"yarn start\" \"yarn dev:server\"",
-    "build": "vue-cli-service electron:build"
+    "electron:build": "vue-cli-service electron:build",
+    "electron:serve": "vue-cli-service electron:serve"
   },
   "keywords": [
     "Electron",
