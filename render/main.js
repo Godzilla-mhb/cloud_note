@@ -5,6 +5,9 @@ import App from './App'
 import router from './router'
 import store from './store'
 import Toast from './components/toast.js'
+// 引入样式库
+import  './utils/element.js'
+import 'element-ui/lib/theme-chalk/index.css';
 Vue.http = Vue.prototype.$http = axios
 Vue.config.productionTip = false
 Vue.use(Toast)

@@ -1,43 +1,94 @@
 <template>
-    <div class="home-page">
-        <div class="sidebar">
-            <div class="top">
-                <img src="../assets/page.jpg" alt="云笔记" class="logo">
-                <span class="title">笔记系统</span>
-            </div>
-            <div class="operate">
-                <div class="operate-btn" @click="getMyNotes">我的笔记</div>
-                <div class="operate-btn" @click="buildNewNote">新建笔记</div>
-                <div class="operate-btn" @click="saveLocal">保存本地</div>
-                <div class="operate-btn" @click="syncToCloud">同步到云</div>
-            </div>
-            <div class="bottom">
-                <span class="cur-date">{{currentDate}}</span>
-                <span class="cur-day">{{currentWeekDay}}</span>
-            </div>
-        </div>
-        <div class="main-win">
-            <div class="article-list" v-if="list.length" v-show="showMyNotesList">
-                <li v-for="(item, index) in list" :key="item.id" @click="selectNote(item)">{{item.title}}</li>
-            </div>
-            <div class="article-content">
-                <div class="article-name">
-                    <li @click="selectNote(item)" v-for="(item,index) in openNoteList" :class="currentNoteId == item.id ? 'cur-menu' : '' ">{{item.title}}
-                        <span class="close" @click="closeNote($event,index,item)">-</span>
-                    </li>
-                </div>
-                <textarea class="editor" v-model="noteTxt" @click="bodyClick($event)" @contextmenu="getContextmenu($event)" style="height:932px"></textarea>
-                <contextMenu v-model="openContextMenu" :clientX="clientX" :clientY="clientY"></contextMenu>
-                <!-- 新增文件 -->
-                <Confirm v-model="openNewNoteConfirm" @on-confirm="createNote">
-                    <div slot="title">输出新文件名</div>
-                    <div slot="content"> 文件名：
-                        <input type="text" v-model="titleInput">
-                    </div>
-                </Confirm>
-            </div>
-        </div>
+  <div class="home-page">
+    <div class="sidebar">
+      <div class="top">
+        <img src="../assets/page.jpg" alt="云笔记" class="logo" />
+        <span class="title">笔记系统</span>
+      </div>
+      <div class="operate">
+        <div class="operate-btn" @click="getMyNotes">我的笔记</div>
+        <div class="operate-btn" @click="buildNewNote">新建笔记</div>
+        <div class="operate-btn" @click="syncToLocal">同步本地</div>
+        <div class="operate-btn" @click="saveLocal">保存本地</div>
+        <div class="operate-btn" @click="syncToCloud">同步到云</div>
+      </div>
+      <div class="bottom">
+        <span class="cur-date">{{ currentDate }}</span>
+        <span class="cur-day">{{ currentWeekDay }}</span>
+      </div>
     </div>
+    <div class="main-win">
+      <div class="article-list" v-if="list.length" v-show="showMyNotesList">
+        <!-- 搜索文档 -->
+        <el-input
+          placeholder="请输入内容"
+          prefix-icon="el-icon-search"
+          v-model="searchFileConetnt"
+          @change="searchFile"
+        >
+        </el-input>
+        <li
+          style="display: flex; justify-content: space-between"
+          v-for="(item, index) in list"
+          :key="item.id"
+          @click="selectNote(item)"
+        >
+          {{ item.title
+          }}<i @click="deleteFile" class="el-icon-delete-solid"></i>
+        </li>
+      </div>
+      <div class="article-content">
+        <div class="article-name">
+          <li
+            @click="selectNote(item)"
+            v-for="(item, index) in openNoteList"
+            :class="currentNoteId == item.id ? 'cur-menu' : ''"
+          >
+            {{ item.title }}
+            <span class="close" @click="closeNote($event, index, item)">-</span>
+          </li>
+        </div>
+        <textarea
+          class="editor"
+          v-model="noteTxt"
+          @click="bodyClick($event)"
+          @contextmenu="getContextmenu($event)"
+          style="height: 932px"
+        ></textarea>
+        <contextMenu
+          v-model="openContextMenu"
+          :clientX="clientX"
+          :clientY="clientY"
+        ></contextMenu>
+        <!-- 新增文件 -->
+        <Confirm v-model="openNewNoteConfirm" @on-confirm="createNote">
+          <div slot="title">输出新文件名</div>
+          <div slot="content">
+            文件名：
+            <input type="text" v-model="titleInput" />
+          </div>
+        </Confirm>
+        <!-- 检索文字弹窗 -->
+        <el-dialog
+          :visible="searchDialogVisible"
+          :show-close="false"
+          @close="searchDialogVisible = false"
+          style="width: 450px"
+        >
+          <el-input
+            width="150"
+            v-model="keyword"
+            placeholder="请输入搜索关键字"
+          ></el-input>
+          <div style="display: flex; width: 41px; flex-wrap: wrap">
+            <span style="font-size: 11px; word-break: keep-all">找到N处</span>
+            <i class="el-icon-arrow-down"></i>
+            <i class="el-icon-arrow-up"></i>
+          </div>
+        </el-dialog>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script>
@@ -55,7 +106,10 @@ export default {
       clientX: '',
       clientY: '',
       openNewNoteConfirm: false, // 新建笔记弹窗控制开关
-      titleInput: '' // 标题输入
+      titleInput: '', // 标题输入
+      searchFileConetnt: '', // 搜索文档
+      searchDialogVisible: false, // 检索弹窗
+      keyword: '' // 检索关键字
     }
   },
   components: {
@@ -63,16 +117,24 @@ export default {
     contextMenu
   },
   methods: {
+    // 文档内关键字搜索
+    searchKey () {},
+    // 搜索文档，自动打印
+    searchFile () {},
+    // 删除单个文本
+    deleteFile () {},
     // 监听画板事件
     bodyClick (e) {
       // 判断是否在菜单内
       var clientX = e.clientX
       var clientY = e.clientY
-      if (clientX < this.clientX ||
-                    clientX + 100 > this.clientX ||
-                    clientY < this.clientY ||
-                    clientY + 100 > this.clientY
-      ) { // 屏幕外
+      if (
+        clientX < this.clientX ||
+        clientX + 100 > this.clientX ||
+        clientY < this.clientY ||
+        clientY + 100 > this.clientY
+      ) {
+        // 屏幕外
         this.openContextMenu = false
       }
     },
@@ -86,7 +148,7 @@ export default {
     // 获取我的笔记
     getMyNotes () {
       this.showMyNotesList = !this.showMyNotesList
-      this.$store.dispatch('getItem', { key: 'myNotes' }).then(myNotes => {
+      this.$store.dispatch('getItem', { key: 'myNotes' }).then((myNotes) => {
         if (myNotes) {
           this.list = JSON.parse(myNotes) || []
         } else {
@@ -106,31 +168,51 @@ export default {
       }
       console.log(this.titleInput)
       var id = +new Date()
-      var myNotes = this.$store.dispatch('getItem', { key: 'myNotes' }).then(myNotes => {
-        if (myNotes) {
-          myNotes = JSON.parse(myNotes)
-        } else {
-          myNotes = []
-        }
-        myNotes.push({ id: id, title: this.titleInput, content: '', time: new Date() })
-        // 打开文档加入
-        this.openNoteList.push({ id: id, title: this.titleInput, content: '', time: new Date() })
-        // 我的文档加入
-        this.list.push({ id: id, title: this.titleInput, content: '', time: new Date() })
-        // 将当前文档的id设为新增的这块
-        this.currentNoteId = id
-        this.$store.dispatch('setItem', { key: 'myNotes', value: JSON.stringify(myNotes) }) // 存储
-        this.openNewNoteConfirm = false
-      })
+      var myNotes = this.$store
+        .dispatch('getItem', { key: 'myNotes' })
+        .then((myNotes) => {
+          if (myNotes) {
+            myNotes = JSON.parse(myNotes)
+          } else {
+            myNotes = []
+          }
+          myNotes.push({
+            id: id,
+            title: this.titleInput,
+            content: '',
+            time: new Date()
+          })
+          // 打开文档加入
+          this.openNoteList.push({
+            id: id,
+            title: this.titleInput,
+            content: '',
+            time: new Date()
+          })
+          // 我的文档加入
+          this.list.push({
+            id: id,
+            title: this.titleInput,
+            content: '',
+            time: new Date()
+          })
+          // 将当前文档的id设为新增的这块
+          this.currentNoteId = id
+          this.$store.dispatch('setItem', {
+            key: 'myNotes',
+            value: JSON.stringify(myNotes)
+          }) // 存储
+          this.openNewNoteConfirm = false
+        })
     },
     // 保存本地
     saveLocal () {
       // 当前文档保存
       if (!this.currentNoteId) {
-        this.$toast.error('请选择你要保存的文档')
+        this.$toast.error('请选择你要保存的文档!')
         return
       }
-      this.$store.dispatch('getItem', { key: 'myNotes' }).then(notesList => {
+      this.$store.dispatch('getItem', { key: 'myNotes' }).then((notesList) => {
         notesList = JSON.parse(notesList)
         for (var i = 0; i < notesList.length; i++) {
           if (this.currentNoteId === notesList[i].id) {
@@ -138,20 +220,27 @@ export default {
             notesList[i].updateTime = new Date()
           }
         }
-        this.$store.dispatch('setItem', { key: 'myNotes', value: JSON.stringify(notesList) }).then(res => {
-          this.$toast.success('本地保存成功')
-          this.list = notesList // 刷新本地
-        })
+        this.$store
+          .dispatch('setItem', {
+            key: 'myNotes',
+            value: JSON.stringify(notesList)
+          })
+          .then((res) => {
+            this.$toast.success('本地保存成功!!!')
+            this.list = notesList // 刷新本地
+          })
       })
     },
     // 同步到云
     syncToCloud () {
       this.$toast.success('你有点骚气')
     },
+    // 同步本地
+    syncToLocal () {},
     // 切换选中
     selectNote (data) {
       // 若无则插入,重复不做处理
-      var match = this.openNoteList.filter(it => {
+      var match = this.openNoteList.filter((it) => {
         return it.id === data.id
       })
       if (!match.length) {
@@ -164,7 +253,8 @@ export default {
     closeNote (e, index, data) {
       e.stopPropagation() // 阻止冒泡
       this.openNoteList.splice(index, 1)
-      if (data.id === this.currentNoteId) { // 关闭的是选中的文档
+      if (data.id === this.currentNoteId) {
+        // 关闭的是选中的文档
         this.noteTxt = ''
         this.currentNoteId = ''
       }
@@ -175,16 +265,23 @@ export default {
       var ctrlKey = e.ctrlKey || e.metaKey
       if (ctrlKey && keyCode === 83) {
         this.saveLocal()
+      } else if (ctrlKey && keyCode === 70) {
+        // 检索事件
+        this.searchDialogVisible = true
       }
     }
   },
   mounted () {
-    document.querySelector('.editor').addEventListener('keydown', this.keyBoardSave, false)
+    document
+      .querySelector('.editor')
+      .addEventListener('keydown', this.keyBoardSave, false)
   },
   computed: {
     currentDate: function () {
       var time = new Date()
-      return time.getFullYear() + '/' + (time.getMonth() + 1) + '/' + time.getDate()
+      return (
+        time.getFullYear() + '/' + (time.getMonth() + 1) + '/' + time.getDate()
+      )
     },
     currentWeekDay: function () {
       var day = new Date().getDay()
@@ -219,247 +316,285 @@ export default {
 </script>
 
 <style lang="less">
-    .cur-menu {
-        background: slateblue !important;
-    }
+.cur-menu {
+  background: slateblue !important;
+}
 
-    li {
-        list-style: none;
-        font-size: 14px;
-        cursor: pointer;
-    }
+li {
+  list-style: none;
+  font-size: 14px;
+  cursor: pointer;
+}
 
-    @media screen and (min-width: 800px) {
-        .home-page {
-            height: 100%;
-            .sidebar {
-                width: 400px;
-                height: 98%;
-                float: left;
-                background: #fff;
-                .top {
-                    display: flex;
-                    align-items: center;
-                    .logo {
-                        width: 120px;
-                        height: 120px;
-                    }
-                    .title {
-                        color: steelblue;
-                        font-size: 36px;
-                    }
-                }
-                .operate {
-                    position: fixed;
-                    bottom: 80px;
-                    width: 400px;
-                    .operate-btn {
-                        width: 240px;
-                        text-align: center;
-                        border: 2px solid #eee;
-                        border-radius: 8px;
-                        background: green;
-                        color: #fff;
-                        font-size: 28px;
-                        padding: 10px 0;
-                        cursor: pointer;
-                        margin: 0 auto;
-                    }
-                }
-                .bottom {
-                    position: fixed;
-                    bottom: 20px;
-                    width: 400px;
-                    text-align: center;
-                    .cur-date {
-                        color: #666;
-                        font-size: 28px;
-                    }
-                    .cur-day {
-                        color: #333;
-                        font-size: 32px;
-                    }
-                }
-            }
-            .main-win {
-                margin-left: 400px;
-                height: 98%;
-                background: #000;
-                display: flex;
-                .editor {
-                    height: calc(100% - 40px);
-                    overflow-y: scroll;
-                }
-                .article-list {
-                    flex-basis: 200px;
-                    background: #f5e5e8;;
-                    li {
-                        list-style: none;
-                        font-size: 14px;
-                        color: #666;
-                        cursor: pointer;
-                        padding: 4px;
-                        &:hover {
-                            background: slateblue;
-                            color: white;
-                        }
-                    }
-                }
-                .article-content {
-                    flex: 1;
-                    .article-name {
-                        background: #d4bbbb;
-                        height: 40px;
-                        color: #fff;
-                        li {
-                            display: inline-block;
-                            width: 100px;
-                            position: relative;
-                            margin: 5px;
-                        }
-                        .close {
-                            position: absolute;
-                            display: inline-block;
-                            width: 10px;
-                            text-align: center;
-                            line-height: 8px;
-                            height: 10px;
-                            background: red;
-                            top: -5px;
-                            right: -3px;
-                            border-radius: 50%;
-                            cursor: pointer;
-                        }
-                    }
-                    .editor {
-                        background: white;
-                    }
-                }
-                .editor {
-                    height: calc(100% - 30px);
-                    overflow-y: scroll;
-                    resize: none;
-                    width: calc(100% - 5px);
-                    background: #ccc;
-                }
-            }
+@media screen and (min-width: 800px) {
+  .home-page {
+    height: 100%;
+    .sidebar {
+      width: 400px;
+      height: 98%;
+      float: left;
+      background: #fff;
+      .top {
+        display: flex;
+        align-items: center;
+        .logo {
+          width: 120px;
+          height: 120px;
         }
-    }
-
-    @media screen and (max-width: 800px) {
-        .home-page {
-            height: 100%;
-            .sidebar {
-                width: 200px;
-                height: 98%;
-                float: left;
-                background: #fff;
-                .top {
-                    display: flex;
-                    align-items: center;
-                    .logo {
-                        width: 60px;
-                        height: 60px;
-                    }
-                    .title {
-                        color: steelblue;
-                        font-size: 18px;
-                    }
-                }
-                .operate {
-                    position: fixed;
-                    bottom: 50px;
-                    width: 200px;
-                    .operate-btn {
-                        width: 120px;
-                        text-align: center;
-                        border: 1px solid #eee;
-                        border-radius: 4px;
-                        background: green;
-                        color: #fff;
-                        font-size: 14px;
-                        padding: 5px 0;
-                        cursor: pointer;
-                        margin: 0 auto;
-                    }
-                }
-                .bottom {
-                    position: fixed;
-                    bottom: 10px;
-                    width: 200px;
-                    text-align: center;
-                    .cur-date {
-                        color: #666;
-                        font-size: 14px;
-                    }
-                    .cur-day {
-                        color: #333;
-                        font-size: 16px;
-                    }
-                }
-            }
-            .main-win { 
-                margin-left: 200px;
-                height: 98%;
-                background: #000;
-                display: flex;
-                .article-list {
-                    flex-basis: 100px;
-                    background: #f5e5e8;;
-                    li {
-                        list-style: none;
-                        font-size: 14px;
-                        color: #666;
-                        cursor: pointer;
-                        padding: 4px;
-                        &:hover {
-                            background: slateblue;
-                            color: #fff;
-                        }
-                    }
-                }
-                .article-content {
-                    flex: 1;
-                    .article-name {
-                        background: #d4bbbb;
-                        height: 30px;
-                        color: #fff;
-                        li {
-                            display: inline-block;
-                            width: 100px;
-                            position: relative;
-                            margin: 5px;
-                        }
-                        .close {
-                            position: absolute;
-                            display: inline-block;
-                            width: 10px;
-                            text-align: center;
-                            line-height: 8px;
-                            height: 10px;
-                            background: red;
-                            top: -5px;
-                            right: -3px;
-                            border-radius: 50%;
-                            cursor: pointer;
-                        }
-                    }
-                    .editor {
-                        height: calc(100% - 36px);
-                        overflow-y: scroll;
-                        resize: none;
-                        width: calc(100% - 2px);
-                        background: white;
-                        padding: 0;
-                        border: none;
-                        margin: 0;
-                        color: #fff;
-                        &::-webkit-scrollbar {
-                            display: none;
-                        }
-                    }
-                }
-            }
+        .title {
+          color: steelblue;
+          font-size: 36px;
         }
+      }
+      .operate {
+        position: fixed;
+        bottom: 80px;
+        width: 400px;
+        .operate-btn {
+          width: 240px;
+          text-align: center;
+          border: 2px solid #eee;
+          border-radius: 8px;
+          background: green;
+          color: #fff;
+          font-size: 28px;
+          padding: 10px 0;
+          cursor: pointer;
+          margin: 0 auto;
+        }
+      }
+      .bottom {
+        position: fixed;
+        bottom: 20px;
+        width: 400px;
+        text-align: center;
+        .cur-date {
+          color: #666;
+          font-size: 28px;
+        }
+        .cur-day {
+          color: #333;
+          font-size: 32px;
+        }
+      }
     }
+    .main-win {
+      margin-left: 400px;
+      height: 98%;
+      background: #000;
+      display: flex;
+      .editor {
+        height: calc(100% - 40px);
+        overflow-y: scroll;
+      }
+      .article-list {
+        flex-basis: 200px;
+        background: #f5e5e8;
+        li {
+          list-style: none;
+          font-size: 14px;
+          color: #666;
+          cursor: pointer;
+          padding: 4px;
+          &:hover {
+            background: slateblue;
+            color: white;
+          }
+        }
+      }
+      .article-content {
+        flex: 1;
+        .article-name {
+          background: #d4bbbb;
+          height: 40px;
+          color: #fff;
+          li {
+            display: inline-block;
+            width: 100px;
+            position: relative;
+            margin: 5px;
+          }
+          .close {
+            position: absolute;
+            display: inline-block;
+            width: 10px;
+            text-align: center;
+            line-height: 8px;
+            height: 10px;
+            background: red;
+            top: -5px;
+            right: -3px;
+            border-radius: 50%;
+            cursor: pointer;
+          }
+        }
+        .editor {
+          background: white;
+        }
+        /deep/ .el-dialog__wrapper {
+          position: fixed;
+          bottom: 0;
+          left: 80%;
+          overflow: auto;
+          margin: 0;
+        }
+
+        /deep/ .el-dialog__header {
+          display: none;
+        }
+        /deep/ .el-dialog__body {
+          display: flex;
+          align-items: center;
+          padding: 5px 5px 5px 5px;
+          color: #606266;
+          font-size: 11px;
+          word-break: break-all;
+        }
+      }
+      .editor {
+        height: calc(100% - 30px);
+        overflow-y: scroll;
+        resize: none;
+        width: calc(100% - 5px);
+        background: #ccc;
+      }
+    }
+  }
+}
+
+@media screen and (max-width: 800px) {
+  .home-page {
+    height: 100%;
+    .sidebar {
+      width: 200px;
+      height: 98%;
+      float: left;
+      background: #fff;
+      .top {
+        display: flex;
+        align-items: center;
+        .logo {
+          width: 60px;
+          height: 60px;
+        }
+        .title {
+          color: steelblue;
+          font-size: 18px;
+        }
+      }
+      .operate {
+        position: fixed;
+        bottom: 50px;
+        width: 200px;
+        .operate-btn {
+          width: 120px;
+          text-align: center;
+          border: 1px solid #eee;
+          border-radius: 4px;
+          background: green;
+          color: #fff;
+          font-size: 14px;
+          padding: 5px 0;
+          cursor: pointer;
+          margin: 0 auto;
+        }
+      }
+      .bottom {
+        position: fixed;
+        bottom: 10px;
+        width: 200px;
+        text-align: center;
+        .cur-date {
+          color: #666;
+          font-size: 14px;
+        }
+        .cur-day {
+          color: #333;
+          font-size: 16px;
+        }
+      }
+    }
+    .main-win {
+      margin-left: 200px;
+      height: 98%;
+      background: #000;
+      display: flex;
+      .article-list {
+        flex-basis: 100px;
+        background: #f5e5e8;
+        li {
+          list-style: none;
+          font-size: 14px;
+          color: #666;
+          cursor: pointer;
+          padding: 4px;
+          &:hover {
+            background: slateblue;
+            color: #fff;
+          }
+        }
+      }
+      .article-content {
+        /deep/ .el-dialog__wrapper {
+          position: fixed;
+          bottom: 0;
+          left: 80%;
+          overflow: auto;
+          margin: 0;
+        }
+
+        /deep/ .el-dialog__header {
+          display: none;
+        }
+        /deep/ .el-dialog__body {
+          display: flex;
+          align-items: center;
+          padding: 5px 5px 5px 5px;
+          color: #606266;
+          font-size: 11px;
+          word-break: break-all;
+        }
+        flex: 1;
+        .article-name {
+          background: #d4bbbb;
+          height: 30px;
+          color: #fff;
+          li {
+            display: inline-block;
+            width: 100px;
+            position: relative;
+            margin: 5px;
+          }
+          .close {
+            position: absolute;
+            display: inline-block;
+            width: 10px;
+            text-align: center;
+            line-height: 8px;
+            height: 10px;
+            background: red;
+            top: -5px;
+            right: -3px;
+            border-radius: 50%;
+            cursor: pointer;
+          }
+        }
+        .editor {
+          height: calc(100% - 36px);
+          overflow-y: scroll;
+          resize: none;
+          width: calc(100% - 2px);
+          background: white;
+          padding: 0;
+          border: none;
+          margin: 0;
+          color: #fff;
+          &::-webkit-scrollbar {
+            display: none;
+          }
+        }
+      }
+    }
+  }
+}
 </style>

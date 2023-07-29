@@ -10,7 +10,11 @@ let mainWindow
 
 function createWindow () {
   // Create the browser window.
-  mainWindow = new BrowserWindow({width: 1920, height: 1080, backgroundColor: '#2e2c29'})
+  mainWindow = new BrowserWindow({width: 1920, height: 1080, backgroundColor: '#2e2c29',  
+    // frame: false, // 取消顶部栏
+  webPreferences: {
+    nodeIntegration: true
+  }})
 
   // and load the index.html of the app.
   // mainWindow.loadFile('index.html')
