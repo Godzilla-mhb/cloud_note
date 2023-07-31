@@ -74,6 +74,7 @@
           :show-close="false"
           @close="searchDialogVisible = false"
           style="width: 450px"
+          :modal="false"
         >
           <el-input
             width="150"
@@ -82,8 +83,15 @@
           ></el-input>
           <div style="display: flex; width: 41px; flex-wrap: wrap">
             <span style="font-size: 11px; word-break: keep-all">找到N处</span>
-            <i class="el-icon-arrow-down"></i>
-            <i class="el-icon-arrow-up"></i>
+            <i
+              class="el-icon-arrow-down"
+              @click="keyword ? switchKeyWord : ''"
+            ></i>
+            <i
+              style="margin-left: 17px"
+              class="el-icon-arrow-up"
+              @click="keyword ? switchKeyWord : ''"
+            ></i>
           </div>
         </el-dialog>
       </div>
@@ -117,6 +125,33 @@ export default {
     contextMenu
   },
   methods: {
+    // tab按键
+    pressAndHoldSpaces (numSpaces, duration) {
+      function pressSpace () {
+        const event = new KeyboardEvent('keydown', {
+          key: ' ',
+          keyCode: 32,
+          bubbles: true,
+          cancelable: true
+        })
+        document.dispatchEvent(event)
+      }
+      function releaseSpace () {
+        const event = new KeyboardEvent('keyup', {
+          key: ' ',
+          keyCode: 32,
+          bubbles: true,
+          cancelable: true
+        })
+        document.dispatchEvent(event)
+      }
+      for (let i = 0; i < numSpaces; i++) {
+        setTimeout(pressSpace, i * duration)
+        setTimeout(releaseSpace, (i + 1) * duration)
+      }
+    },
+    // 切换检索到的关键字
+    switchKeyWord () {},
     // 文档内关键字搜索
     searchKey () {},
     // 搜索文档，自动打印
@@ -261,13 +296,17 @@ export default {
     },
     // 监听ctrl + s 保存事件
     keyBoardSave (e) {
+      console.log('keyCode', e.keyCode)
       var keyCode = e.keyCode || e.which || e.charCode
       var ctrlKey = e.ctrlKey || e.metaKey
       if (ctrlKey && keyCode === 83) {
         this.saveLocal()
-      } else if (ctrlKey && keyCode === 70) {
+      } else if (this.noteTxt.length && ctrlKey && keyCode === 70) {
         // 检索事件
         this.searchDialogVisible = true
+      } else if (this.noteTxt.length && !ctrlKey && e.keyCode === 9) {
+        // tab顶格
+        // this.pressAndHoldSpaces(5, 100)
       }
     }
   },
@@ -386,6 +425,7 @@ li {
       .editor {
         height: calc(100% - 40px);
         overflow-y: scroll;
+        tab-size: 4;
       }
       .article-list {
         flex-basis: 200px;
@@ -430,6 +470,7 @@ li {
         }
         .editor {
           background: white;
+          tab-size: 4;
         }
         /deep/ .el-dialog__wrapper {
           position: fixed;
@@ -457,6 +498,7 @@ li {
         resize: none;
         width: calc(100% - 5px);
         background: #ccc;
+        tab-size: 4;
       }
     }
   }
@@ -586,6 +628,7 @@ li {
           width: calc(100% - 2px);
           background: white;
           padding: 0;
+          tab-size: 4;
           border: none;
           margin: 0;
           color: #fff;
