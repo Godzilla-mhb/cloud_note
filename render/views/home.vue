@@ -48,13 +48,14 @@
             <span class="close" @click="closeNote($event, index, item)">-</span>
           </li>
         </div>
-        <textarea
+        <!-- <textarea
           class="editor"
           v-model="noteTxt"
           @click="bodyClick($event)"
           @contextmenu="getContextmenu($event)"
           style="height: 932px"
-        ></textarea>
+        ></textarea> -->
+        <TinymceEditor :value="formData.content" @changeValue="changeValue" />
         <contextMenu
           v-model="openContextMenu"
           :clientX="clientX"
@@ -102,6 +103,7 @@
 <script>
 import Confirm from '../components/confirm.vue'
 import contextMenu from '../components/context-menu.vue'
+import TinymceEditor from '../components/tinymce.vue'
 export default {
   data () {
     return {
@@ -117,14 +119,20 @@ export default {
       titleInput: '', // 标题输入
       searchFileConetnt: '', // 搜索文档
       searchDialogVisible: false, // 检索弹窗
-      keyword: '' // 检索关键字
+      keyword: '', // 检索关键字
+      formData: {} // 富文本内容
     }
   },
   components: {
     Confirm,
-    contextMenu
+    contextMenu,
+    TinymceEditor
   },
   methods: {
+    // 富文本
+    changeValue (value) {
+      this.formData.content = value
+    },
     // tab按键
     pressAndHoldSpaces (numSpaces, duration) {
       function pressSpace () {

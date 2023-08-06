@@ -12,6 +12,9 @@ Vue.http = Vue.prototype.$http = axios
 Vue.config.productionTip = false
 Vue.use(Toast)
 
+// tinymce编辑器
+
+
 Vue.use({
   install (Vue, options) {
       Vue.prototype.$elRequire = global.elRequire;
