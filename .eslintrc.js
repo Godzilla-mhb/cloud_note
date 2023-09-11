@@ -1,4 +1,5 @@
 module.exports = {
+    // lintOnSave: false,
     root: true,
     parser: 'babel-eslint',
     parserOptions: {
@@ -9,7 +10,7 @@ module.exports = {
         browser: false,
     },
     // https://standardjs.com/readme-zhcn.html
-    extends: 'standard',
+    // extends: 'standard',
     // required to lint *.vue files
     plugins: [
         'vuefix',

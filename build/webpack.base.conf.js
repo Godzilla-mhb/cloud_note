@@ -21,6 +21,7 @@ var webpackConfig = {
     }
   },
   module: {
+    ...([]),
     rules: [
       {
         test: /\.(js|vue)$/,
