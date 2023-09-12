@@ -56,7 +56,7 @@
           @contextmenu="getContextmenu($event)"
           style="height: 932px"
         ></textarea> -->
-        <TinymceEditor :value="formData.content" @changeValue="changeValue" />
+        <TinymceEditor class="editor" :value="formData.content" @changeValue="changeValue" />
         <contextMenu
           v-model="openContextMenu"
           :clientX="clientX"
@@ -424,9 +424,9 @@ export default {
     },
   },
   mounted() {
-    // document
-    //   .querySelector('.editor')
-    //   .addEventListener('keydown', this.keyBoardSave, false)
+    document
+      .querySelector('.editor')
+      .addEventListener('keydown', this.keyBoardSave, false)
   },
   computed: {
     currentDate: function () {

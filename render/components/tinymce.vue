@@ -115,14 +115,19 @@ export default {
             success(base64Data);
           };
           // 读取文件并以 DataURL 的形式获取 Base64 编码数据
-          reader.readAsDataURL(blobInfo);
+          reader.readAsDataURL(blobInfo.blob());
         },
       },
       content: this.value,
     };
   },
   mounted() {
-    tinymce.init({});
+    tinymce.init({
+      mode: "none",
+      /* some standard init params, plugins, ui, custom styles, etc */
+      save_onsavecallback: this.saveActiveEditor(),
+      // save_oncancelcallback: cancelActiveEditor,
+    });
   },
   watch: {
     value(newValue) {
@@ -143,6 +148,32 @@ export default {
   },
   methods: {
     onClick() {},
+    //ctrl + s保存文档
+    saveActiveEditor() {
+      var activeEditor = this.selector;
+      var saveUrl = "http://my.ajax.path/saveStuff";
+      // var idEditor = activeEditor.id;
+      var idEditor = this.selector;
+      // var contentEditor = activeEditor.getContent();
+      /* the next line is for a custom language listbox to edit different locales */
+      var localeEditor =
+        activeEditor.controlManager.get("lbLanguages").selectedValue;
+      $.post(
+        saveUrl,
+        { id: idEditor, content: this.content, locale: localeEditor },
+        function (results) {
+          if (results.Success) {
+            // switch back to display instead of edit
+            return false;
+          } else {
+            activeEditor.windowManager.alert("Error saving data");
+            return false;
+          }
+        },
+        "json"
+      );
+      return false;
+    },
   },
 };
 </script>
